@@ -1,8 +1,7 @@
 import numpy as np
 import sys
 
-from sweep import sweep_solve
-from derivatives import second_derivative
+from methods import implicit_method, explicit_method, crank_nicolson_method
 
 sys.path.append(".")
 
@@ -32,26 +31,6 @@ def u_right_border():
     return 1.0
 
 
-def explicit_method(a: float, h: float, tau: float,
-                    l: float, r: float, t_bound: float) -> np.ndarray:
-    x: np.ndarray = np.arange(l, r + h/2.0, step=h)
-    t: np.ndarray = np.arange(0, t_bound + tau/2.0, step=tau)
-    u: np.ndarray = np.zeros(shape=(len(t), len(x)))
-
-    u[0] = u_initial(x)
-    u[0, 0] = u_left_border()
-    u[0, -1] = u_right_border()
-
-    for k in range(0, len(u) - 1):
-        u[k+1] = u[k] + tau * a * second_derivative(u[k], step=h)
-
-    return u
-
-
-def hybrid_method() -> np.ndarray:
-
-
-
 if __name__ == "__main__":
     a = float(input("Enter parameter 'a': "))
     h = float(input("Enter step 'h': "))
@@ -59,7 +38,20 @@ if __name__ == "__main__":
     t_bound = float(input("Enter time border: "))
     x: np.ndarray = np.arange(0, 1.0 + h/2.0, step=h)
     t: np.ndarray = np.arange(0, t_bound + tau/2.0, step=tau)
-    print(np.round(explicit_method(a, h, tau, 0.0, 1.0, t_bound), 3))
+    print(np.round(explicit_method(u_initial=u_initial,
+                                   u_left_border=u_left_border,
+                                   u_right_border=u_right_border,
+                                   a=a, h=h, tau=tau, l=0.0, r=1.0, t_bound=t_bound), 3))
+    print("==================")
+    print(np.round(implicit_method(u_initial=u_initial,
+                                   u_left_border=u_left_border,
+                                   u_right_border=u_right_border,
+                                   a=a, h=h, tau=tau, l=0.0, r=1.0, t_bound=t_bound), 3))
+    print("==================")
+    print(np.round(crank_nicolson_method(u_initial=u_initial,
+                                         u_left_border=u_left_border,
+                                         u_right_border=u_right_border,
+                                         a=a, h=h, tau=tau, l=0.0, r=1.0, t_bound=t_bound), 3))
     print("==================")
     print(np.round(analytical_grid(a, x, t), 3))
 
