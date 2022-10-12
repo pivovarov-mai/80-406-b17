@@ -31,6 +31,10 @@ def u_right_border():
     return 1.0
 
 
+def error(numeric: np.ndarray, analytical: np.ndarray) -> np.ndarray:
+    return np.abs(numeric - analytical)
+
+
 if __name__ == "__main__":
     a = float(input("Enter parameter 'a': "))
     h = float(input("Enter step 'h': "))
@@ -38,20 +42,35 @@ if __name__ == "__main__":
     t_bound = float(input("Enter time border: "))
     x: np.ndarray = np.arange(0, 1.0 + h/2.0, step=h)
     t: np.ndarray = np.arange(0, t_bound + tau/2.0, step=tau)
-    print(np.round(explicit_method(u_initial=u_initial,
-                                   u_left_border=u_left_border,
-                                   u_right_border=u_right_border,
-                                   a=a, h=h, tau=tau, l=0.0, r=1.0, t_bound=t_bound), 3))
-    print("==================")
-    print(np.round(implicit_method(u_initial=u_initial,
-                                   u_left_border=u_left_border,
-                                   u_right_border=u_right_border,
-                                   a=a, h=h, tau=tau, l=0.0, r=1.0, t_bound=t_bound), 3))
-    print("==================")
-    print(np.round(crank_nicolson_method(u_initial=u_initial,
-                                         u_left_border=u_left_border,
-                                         u_right_border=u_right_border,
-                                         a=a, h=h, tau=tau, l=0.0, r=1.0, t_bound=t_bound), 3))
-    print("==================")
-    print(np.round(analytical_grid(a, x, t), 3))
 
+    kwargs = {
+        "u_initial": u_initial,
+        "u_left_border": u_left_border,
+        "u_right_border": u_right_border,
+        "a": a,
+        "h": h,
+        "tau": tau,
+        "l": 0.0,
+        "r": 1.0,
+        "t_bound": t_bound
+    }
+
+    analytical = analytical_grid(a, x, t)
+
+    print("---------------- EXPLICIT ----------------")
+    sol = explicit_method(**kwargs)
+    print(np.round(sol, 3))
+    print("\nError: ", error(sol[-1], analytical[-1]))
+    print("------------------------------------------\n")
+    print("---------------- IMPLICIT ----------------")
+    sol = implicit_method(**kwargs)
+    print(np.round(sol, 3))
+    print("\nError: ", error(sol[-1], analytical[-1]))
+    print("------------------------------------------\n")
+    print("------------- CRANK-NICOLSON -------------")
+    sol = crank_nicolson_method(**kwargs)
+    print(np.round(sol, 3))
+    print("\nError: ", error(sol[-1], analytical[-1]))
+    print("------------------------------------------\n")
+    print("--------------- ANALYTICAL ---------------")
+    print(np.round(analytical_grid(a, x, t), 3))
