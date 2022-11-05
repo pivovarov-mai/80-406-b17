@@ -3,7 +3,7 @@ import sys
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
-from methods import explicit_method
+from methods import explicit_method, implicit_method
 from approximator import Approx3p2a, Approx2p2a, Approx2p1a
 
 sys.path.append(".")
@@ -38,12 +38,13 @@ def error(numeric: np.ndarray, analytical: np.ndarray) -> np.ndarray:
 
 
 def draw(numerical: np.ndarray, analytical: np.ndarray,
-         x: np.ndarray, t: np.ndarray):
+         x: np.ndarray, t: np.ndarray,
+         title_lhs: str, title_rhs: str):
     fig = plt.figure(figsize=plt.figaspect(0.7))
     xx, tt = np.meshgrid(x, t)
 
     ax = fig.add_subplot(1, 2, 1, projection='3d')
-    plt.title('numerical')
+    plt.title(title_lhs)
     ax.set_xlabel('x', fontsize=20)
     ax.set_ylabel('t', fontsize=20)
     ax.set_zlabel('u', fontsize=20)
@@ -53,7 +54,7 @@ def draw(numerical: np.ndarray, analytical: np.ndarray,
     ax.set_xlabel('x', fontsize=20)
     ax.set_ylabel('t', fontsize=20)
     ax.set_zlabel('u', fontsize=20)
-    plt.title('analytic')
+    plt.title(title_rhs)
     ax.plot_surface(xx, tt, analytical, cmap=cm.coolwarm, linewidth=0, antialiased=True)
 
     plt.show()
@@ -81,18 +82,6 @@ if __name__ == "__main__":
 
     analytical = analytical_grid(a, x, t)
 
-    print("---------------- EXPLICIT (2p1a) ----------------")
-    approx = Approx2p1a()
-    sol = explicit_method(**kwargs, approx=approx)
-    print(np.round(sol, 3))
-    print("\nError: ", error(sol[-1], analytical[-1]))
-    print("-------------------------------------------------\n")
-    print("---------------- EXPLICIT (3p2a) ----------------")
-    approx = Approx3p2a()
-    sol = explicit_method(**kwargs, approx=approx)
-    print(np.round(sol, 3))
-    print("\nError: ", error(sol[-1], analytical[-1]))
-    print("-------------------------------------------------\n")
     print("---------------- EXPLICIT (2p2a) ----------------")
     approx = Approx2p2a()
     sol = explicit_method(**kwargs, approx=approx)
@@ -102,4 +91,15 @@ if __name__ == "__main__":
     print("--------------- ANALYTICAL ---------------")
     print(np.round(analytical, 3))
 
-    draw(sol, analytical, x, t)
+    draw(sol, analytical, x, t, 'explicit', 'analytic')
+
+    print("\n\n---------------- IMPLICIT (2p2a) ----------------")
+    approx = Approx2p2a()
+    sol = implicit_method(**kwargs, approx=approx)
+    print(np.round(sol, 3))
+    print("\nError: ", error(sol[-1], analytical[-1]))
+    print("-------------------------------------------------\n")
+    print("--------------- ANALYTICAL ---------------")
+    print(np.round(analytical, 3))
+
+    draw(sol, analytical, x, t, 'implicit', 'analytic')
