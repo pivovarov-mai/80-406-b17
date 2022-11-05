@@ -3,6 +3,9 @@ import sys
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
+from methods import explicit_method
+from approximator import Approx3p2a, Approx2p2a, Approx2p1a
+
 sys.path.append(".")
 
 
@@ -24,6 +27,10 @@ def u_initial(x: np.ndarray) -> np.ndarray:
 
 def u_t_initial(a: float, x: np.ndarray) -> np.ndarray:
     return -a * (np.sin(x) + np.cos(x))
+
+
+def u_x2_initial(x: np.ndarray) -> np.ndarray:
+    return -u_initial(x)
 
 
 def error(numeric: np.ndarray, analytical: np.ndarray) -> np.ndarray:
@@ -57,5 +64,42 @@ if __name__ == "__main__":
     h = float(input("Enter step 'h': "))
     tau = float(input("Enter step 'tau': "))
     t_bound = float(input("Enter time border: "))
-    x: np.ndarray = np.arange(0, 1.0 + h/2.0, step=h)
+    x: np.ndarray = np.arange(0, 3.14 + h/2.0, step=h)
     t: np.ndarray = np.arange(0, t_bound + tau/2.0, step=tau)
+
+    kwargs = {
+        "u_initial": u_initial,
+        "u_t_initial": u_t_initial,
+        "u_x2_initial": u_x2_initial,
+        "a": a,
+        "h": h,
+        "tau": tau,
+        "l": 0.0,
+        "r": 3.14,
+        "t_bound": t_bound
+    }
+
+    analytical = analytical_grid(a, x, t)
+
+    print("---------------- EXPLICIT (2p1a) ----------------")
+    approx = Approx2p1a()
+    sol = explicit_method(**kwargs, approx=approx)
+    print(np.round(sol, 3))
+    print("\nError: ", error(sol[-1], analytical[-1]))
+    print("-------------------------------------------------\n")
+    print("---------------- EXPLICIT (3p2a) ----------------")
+    approx = Approx3p2a()
+    sol = explicit_method(**kwargs, approx=approx)
+    print(np.round(sol, 3))
+    print("\nError: ", error(sol[-1], analytical[-1]))
+    print("-------------------------------------------------\n")
+    print("---------------- EXPLICIT (2p2a) ----------------")
+    approx = Approx2p2a()
+    sol = explicit_method(**kwargs, approx=approx)
+    print(np.round(sol, 3))
+    print("\nError: ", error(sol[-1], analytical[-1]))
+    print("-------------------------------------------------\n")
+    print("--------------- ANALYTICAL ---------------")
+    print(np.round(analytical, 3))
+
+    draw(sol, analytical, x, t)
