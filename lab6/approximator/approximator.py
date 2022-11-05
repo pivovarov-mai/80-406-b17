@@ -6,12 +6,12 @@ class Approx:
         pass
 
     def explicit_0(self, h: float, sigma: float,
-                   x: np.ndarray, u: np.ndarray,
+                   u: np.ndarray,
                    k: float, tau: float):
         pass
 
     def explicit_l(self, h: float, sigma: float,
-                   x: np.ndarray, u: np.ndarray,
+                   u: np.ndarray,
                    k: float, tau: float):
         pass
 
@@ -26,12 +26,12 @@ class Approx:
 
 class Approx2p1a(Approx):
     def explicit_0(self, h: float, sigma: float,
-                   x: np.ndarray, u: np.ndarray,
+                   u: np.ndarray,
                    k: float, tau: float):
         return u[k+1, 1] / (1.0 + h)
 
     def explicit_l(self, h: float, sigma: float,
-                   x: np.ndarray, u: np.ndarray,
+                   u: np.ndarray,
                    k: float, tau: float):
         return u[k+1, -2] / (1.0 - h)
 
@@ -46,12 +46,12 @@ class Approx2p1a(Approx):
 
 class Approx3p2a(Approx):
     def explicit_0(self, h: float, sigma: float,
-                   x: np.ndarray, u: np.ndarray,
+                   u: np.ndarray,
                    k: float, tau: float):
         return (4.0 * u[k+1][1] - u[k+1][2]) / (3.0 + 2.0 * h)
 
     def explicit_l(self, h: float, sigma: float,
-                   x: np.ndarray, u: np.ndarray,
+                   u: np.ndarray,
                    k: float, tau: float):
         return (4.0 * u[k+1][-2] - u[k+1][-3]) / (3.0 - 2.0 * h)
 
@@ -70,13 +70,13 @@ class Approx3p2a(Approx):
 
 class Approx2p2a(Approx):
     def explicit_0(self, h: float, sigma: float,
-                   x: np.ndarray, u: np.ndarray,
+                   u: np.ndarray,
                    k: float, tau: float):
         return sigma * (2.0 * u[k][1] - (2.0 + 2.0 * h) * u[k][0]) + \
                2.0 * u[k][0] - u[k-1][0]
 
     def explicit_l(self, h: float, sigma: float,
-                   x: np.ndarray, u: np.ndarray,
+                   u: np.ndarray,
                    k: float, tau: float):
         return sigma * (2.0 * u[k][-2] + (2.0 * h - 2.0) * u[k][-1]) + \
                2.0 * u[k][-1] - u[k-1][-1]
