@@ -1,1 +1,1 @@
-from .methods import implicit_method, explicit_method
+from .methods import simple_iter_method
