@@ -3,7 +3,7 @@ import sys
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
-from methods import simple_iter_method
+from methods import simple_iter_method, relaxation_iter_method, seidel_method
 
 sys.path.append(".")
 
@@ -87,5 +87,22 @@ if __name__ == "__main__":
     print("---------------------------------------------\n")
     print("--------------- ANALYTICAL ---------------")
     print(np.round(analytical, 2))
-
     draw(sol, analytical, x, y, 'simple iter', 'analytic')
+
+    print("---------------- SEIDEL ----------------")
+    sol = seidel_method(**kwargs)
+    print(np.round(sol, 2))
+    print("\nError: ", error(sol, analytical))
+    print("-----------------------------------------\n")
+    print("-------------- ANALYTICAL ---------------")
+    print(np.round(analytical, 2))
+    draw(sol, analytical, x, y, 'seidel', 'analytic')
+
+    print("---------------- RELAXATION ITER ----------------")
+    sol = relaxation_iter_method(**kwargs, w=1.5)
+    print(np.round(sol, 2))
+    print("\nError: ", error(sol, analytical))
+    print("-------------------------------------------------\n")
+    print("------------------ ANALYTICAL -------------------")
+    print(np.round(analytical, 2))
+    draw(sol, analytical, x, y, 'relaxation iter', 'analytic')
