@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import sys
 import matplotlib.pyplot as plt
 
@@ -15,7 +16,7 @@ def analytical_solution(a: float,
                         x: float, y: float,
                         t: float,
                         mu1: float, mu2: float) -> float:
-    return np.cos(mu1, x) * np.cos(mu1, y) * np.exp(-(mu1**2 + mu2**2) * a * t)
+    return np.cos(mu1 * x) * np.cos(mu2 * y) * np.exp(-(mu1**2 + mu2**2) * a * t)
 
 
 def analytical_grid(a: float, x: np.ndarray, y: np.ndarray, t: np.ndarray,
@@ -28,29 +29,34 @@ def analytical_grid(a: float, x: np.ndarray, y: np.ndarray, t: np.ndarray,
     return grid
 
 
+@np.vectorize
 def u_yt_initial_0(y: float, t: float,
                    mu1: float, mu2: float) -> float:
-    return np.cos(mu2, y) * np.exp(-(mu1**2 + mu2**2) * a * t)
+    return np.cos(mu2 * y) * np.exp(-(mu1**2 + mu2**2) * a * t)
 
 
+@np.vectorize
 def u_yt_initial_1(y: float, t: float,
                    mu1: float, mu2: float) -> float:
     return 0.0
 
 
+@np.vectorize
 def u_xt_initial_0(x: float, t: float,
                    mu1: float, mu2: float) -> float:
-    return np.cos(mu1, x) * np.exp(-(mu1**2 + mu2**2) * a * t)
+    return np.cos(mu1 * x) * np.exp(-(mu1**2 + mu2**2) * a * t)
 
 
+@np.vectorize
 def u_xt_initial_1(x: float, t: float,
                    mu1: float, mu2: float) -> float:
     return 0.0
 
 
+@np.vectorize
 def u_xy_initial_0(x: float, y: float,
                    mu1: float, mu2: float) -> float:
-    return np.cos(mu1, x) * np.cos(mu2, y)
+    return np.cos(mu1 * x) * np.cos(mu2 * y)
 
 
 def error(numeric: np.ndarray, analytical: np.ndarray) -> np.ndarray:
@@ -60,29 +66,31 @@ def error(numeric: np.ndarray, analytical: np.ndarray) -> np.ndarray:
 def draw(numerical1: np.ndarray, label1: str,
          numerical2: np.ndarray, label2: str,
          analytical: np.ndarray,
-         x: np.ndarray, y: np.ndarray, t: List[float]):
+         x: np.ndarray, y: np.ndarray,
+         t_points: List[int], t: np.ndarray):
     fig = plt.figure(figsize=plt.figaspect(0.7))
     xx, yy = np.meshgrid(x, y)
 
-    ax = fig.add_subplot(len(t), 3, 1, projection='3d')
-    for ti in t:
-        plt.title(label1 + f', t = {ti}')
-        ax.set_xlabel('x', fontsize=20)
-        ax.set_ylabel('y', fontsize=20)
-        ax.set_zlabel(f'u[t={ti}]', fontsize=20)
+    for i, ti in enumerate(t_points):
+        ax = fig.add_subplot(len(t_points), 3, len(t_points) * i + 1, projection='3d')
+        plt.title(label1 + f', t = {t[ti]}')
+        ax.set_xlabel('x', fontsize=10)
+        ax.set_ylabel('y', fontsize=10)
+        ax.set_zlabel(f'u[t={t[ti]}]', fontsize=10)
         ax.plot_surface(xx, yy, numerical1[ti], cmap=cm.coolwarm, linewidth=0, antialiased=True)
 
-        ax.set_xlabel('x', fontsize=20)
-        ax.set_ylabel('y', fontsize=20)
-        ax.set_zlabel(f'u[t={ti}]', fontsize=20)
-        plt.title(label2 + f', t = {ti}')
+        ax = fig.add_subplot(len(t_points), 3, len(t_points) * i + 2, projection='3d')
+        ax.set_xlabel('x', fontsize=10)
+        ax.set_ylabel('y', fontsize=10)
+        ax.set_zlabel(f'u[t={t[ti]}]', fontsize=10)
+        plt.title(label2 + f', t = {t[ti]}')
         ax.plot_surface(xx, yy, numerical2[ti], cmap=cm.coolwarm, linewidth=0, antialiased=True)
 
-        ax = fig.add_subplot(1, 2, 2, projection='3d')
-        ax.set_xlabel('x', fontsize=20)
-        ax.set_ylabel('y', fontsize=20)
-        ax.set_zlabel(f'u[t={ti}]', fontsize=20)
-        plt.title(f'analytic, t = {ti}')
+        ax = fig.add_subplot(len(t_points), 3, len(t_points) * i + 3, projection='3d')
+        ax.set_xlabel('x', fontsize=10)
+        ax.set_ylabel('y', fontsize=10)
+        ax.set_zlabel(f'u[t={t[ti]}]', fontsize=10)
+        plt.title(f'analytic, t = {t[ti]}')
         ax.plot_surface(xx, yy, analytical[ti], cmap=cm.coolwarm, linewidth=0, antialiased=True)
 
     plt.show()
@@ -94,13 +102,14 @@ if __name__ == "__main__":
     hy = float(input("Enter step 'hy': "))
     tau = float(input("Enter step 'tau': "))
     t_bound = float(input("Enter time border: "))
-    x: np.ndarray = np.arange(0, np.pi / 2.0 + hx / 2.0, step=hx)
-    y: np.ndarray = np.arange(0, np.pi / 2.0 + hy / 2.0, step=hy)
-    t: np.ndarray = np.arange(0, t_bound + tau / 2.0, step=tau)
 
     mu = [(1.0, 1.0), (2.0, 1.0), (1.0, 2.0)]
 
     for mu1, mu2 in mu:
+        x: np.ndarray = np.arange(0, mu1 * np.pi / 2.0 + hx / 2.0, step=hx)
+        y: np.ndarray = np.arange(0, mu2 * np.pi / 2.0 + hy / 2.0, step=hy)
+        t: np.ndarray = np.arange(0, t_bound + tau / 2.0, step=tau)
+
         kwargs = {
             "u_yt_initial_0": partial(u_yt_initial_0, mu1=mu1, mu2=mu2),
             "u_yt_initial_1": partial(u_yt_initial_1, mu1=mu1, mu2=mu2),
@@ -111,8 +120,10 @@ if __name__ == "__main__":
             "hx": hx,
             "hy": hy,
             "tau": tau,
-            "l": 0.0,
-            "r": np.pi / 2.0,
+            "lx": 0.0,
+            "rx": mu1 * np.pi / 2.0,
+            "ly": 0.0,
+            "ry": mu2 * np.pi / 2.0,
             "t_bound": t_bound
         }
 
@@ -132,7 +143,7 @@ if __name__ == "__main__":
         print("------------- ANALYTICAL ------------")
         print(np.round(analytical, 2))
 
-        t_points = [0.0, np.pi / 4.0, np.pi / 2.0]
-        draw(sol1, "FSM", sol2, "ADM", analytical, x, y, t_points)
+        t_points = [0, len(t) // 2, len(t) - 1]
+        draw(sol1, "FSM", sol2, "ADM", analytical, x, y, t_points, t)
 
         print("=====================================\n\n")
