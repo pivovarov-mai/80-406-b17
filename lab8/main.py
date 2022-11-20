@@ -106,6 +106,7 @@ if __name__ == "__main__":
     mu = [(1.0, 1.0), (2.0, 1.0), (1.0, 2.0)]
 
     for mu1, mu2 in mu:
+        print(f"mu1 = {mu1}, mu2 = {mu2}\n")
         x: np.ndarray = np.arange(0, mu1 * np.pi / 2.0 + hx / 2.0, step=hx)
         y: np.ndarray = np.arange(0, mu2 * np.pi / 2.0 + hy / 2.0, step=hy)
         t: np.ndarray = np.arange(0, t_bound + tau / 2.0, step=tau)
