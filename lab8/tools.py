@@ -1,32 +1,46 @@
 import numpy as np
 
 
-def ux0y(y):
-    return np.zeros(len(y))
+@np.vectorize
+def u0yt(y, t, a, mu1, mu2):
+    return np.cos(mu2 * y) * np.exp(-(mu1 * mu1 + mu2 * mu2) * a * t)
 
 
-def u1y(y):
-    return 1.0 - y * y
+@np.vectorize
+def u1yt(y, t, a, mu1, mu2):
+    return 0.0
 
 
-def uyx0(x):
-    return np.zeros(len(x))
+@np.vectorize
+def u0xt(x, t, a, mu1, mu2):
+    return np.cos(mu1 * x) * np.exp(-(mu1 * mu1 + mu2 * mu2) * a * t)
 
 
-def ux1(x):
-    return x * x - 1.0
+@np.vectorize
+def u1xt(x, t, a, mu1, mu2):
+    return 0.0
 
 
-def analitic_solution(x, y):
-    return x * x - y * y
+@np.vectorize
+def u0xy(x, y, a, mu1, mu2):
+    return np.cos(mu1 * x) * np.cos(mu2 * y)
 
 
-def analitic_grid(x, y):
-    grid = np.zeros((len(y), len(x)))
+def analitic_solution(a, x, y, t, mu1, mu2):
+    p1 = np.cos(mu1 * x)
+    p2 = np.cos(mu2 * y)
+    p3 = np.exp(-(mu1 * mu1 + mu2 * mu2) * a * t)
+    return p1 * p2 * p3
 
-    for i in range(len(y)):
-        for j in range(len(x)):
-            grid[i, j] = analitic_solution(x[j], y[i])
+
+def analitic_grid(a, x, y, t, f):
+    grid = np.zeros((len(t), len(y), len(x)))
+
+    for i in range(len(t)):
+        for j in range(len(y)):
+            for k in range(len(x)):
+                grid[i, j, k] = f(a, x[k], y[j], t[i])
+
     return grid
 
 
