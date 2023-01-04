@@ -5,7 +5,7 @@ from tools import ux0y, u1y, uyx0, ux1, analitic_grid, error
 from plot import plot
 
 
-def zeidel(params, x, y):
+def relaxation(params, x, y):
     h = params['h']
     eps = params['eps']
     epochs = params['epochs']
@@ -72,7 +72,7 @@ def main(params):
     y = np.arange(ylhs, yrhs + h / 2.0, step=h)
 
     analytic = analitic_grid(x, y)
-    approx = zeidel(params, x, y)
+    approx = relaxation(params, x, y)
 
     err = error(approx, analytic)
     print(f'error={err:.3f}')
