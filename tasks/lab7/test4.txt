@@ -1,0 +1,9 @@
+uxx + uyy = 0
+ux(0) = exp(y)
+ux(3.14) = 0 - exp(y)
+u(0) = sin(x)
+u(1) = exp(1) * sin(x)
+
+0.01 0.01
+
+sin(x) * exp(y)

@@ -1,0 +1,10 @@
+ut = uxx + uyy
+u(0) = cos(y)*exp(-2*t)
+u(pi) = -cos(y)*exp(-2*t)
+uy(0) = cos(x)*exp(-2*t)
+u(pi) = -cos(x)*exp(-2*t)
+u(0) = cos(x)*cos(y)
+
+0.01 0.01 0.1
+
+cos(x)*cos(y)*exp(-2*t)

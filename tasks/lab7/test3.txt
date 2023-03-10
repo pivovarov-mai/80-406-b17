@@ -1,0 +1,9 @@
+uxx + uyy = 0
+u(0) = cos(y)
+u(1) = exp(1) * cos(y)
+uy(0) = 0
+uy(1.57) = 0 - exp(x)
+
+0.01 0.01
+
+exp(x) * cos(y)
