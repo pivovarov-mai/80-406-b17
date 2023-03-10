@@ -1,0 +1,10 @@
+ut = uxx + uyy
+u(0) = sinh(y)*exp(-3*t)
+u(pi/2) = 0-sinh(y)*exp(-3*t)
+uy(0) = cos(2*x)*exp(-3*t)
+u(ln(2)) = 3/4 * cos(2*x)*exp(-3*t)
+u(0) = cos(2*x) * sinh(y)
+
+0.01 0.01 0.01
+
+cos(2*x) * sinh(y) * exp(-3*t)

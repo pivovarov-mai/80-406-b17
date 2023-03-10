@@ -1,0 +1,9 @@
+utt = uxx
+ux(0) - u(0) = 0
+ux(3.14) - u(3.14) = 0
+u(0) = sin(x) + cos(x)
+ut(0) = 0 - sin(x) - cos(x)
+
+100 1000
+
+sin(x - t) + cos(x + t)
